@@ -5,7 +5,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { LogOut, Menu, X } from "lucide-react"
+import { LogOut, Menu, ShoppingCart, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
@@ -142,6 +142,9 @@ const Navbar = () => {
                 </DropdownMenu>
               ) : (
                 <>
+                <Link href='/cart'>
+                <ShoppingCart className="w-8 h-8"/>
+                </Link>
                   <Link href="/login">
                     <Button
                       variant="ghost"
