@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import LogoutModal from "@/components/modals/LogoutModal"
 import { toast } from "sonner"
+import { useCart } from "@/components/context/cart-context"
 // import { useRouter } from "next/navigation"
 
 const Navbar = () => {
@@ -34,6 +35,8 @@ const Navbar = () => {
   const session = useSession()
   const status = session?.status
   const user = session?.data?.user
+
+    const { cartCount } = useCart();
 
   
 
@@ -110,6 +113,14 @@ const Navbar = () => {
 
             {/* CTA Buttons */}
             <div className="hidden sm:flex items-center gap-4 flex-shrink-0">
+               <Link href="/cart" className="relative">
+                <ShoppingCart className="h-8 w-8" />
+                {cartCount > 0 && (
+                  <span className="absolute -right-2 -top-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
               {status === "authenticated" && user ? (
                 <DropdownMenu open={open} onOpenChange={setOpen} modal={false}>
                   <DropdownMenuTrigger>
@@ -142,9 +153,17 @@ const Navbar = () => {
                 </DropdownMenu>
               ) : (
                 <>
-                <Link href='/cart'>
+                {/* <Link href="/cart" className="relative w-fit">
+  <ShoppingCart className="w-7 h-7" />
+  {cartCount > 0 && (
+    <span className="absolute -right-2 -top-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">
+      {cartCount}
+    </span>
+  )}
+</Link> */}
+                {/* <Link href='/cart'>
                 <ShoppingCart className="w-8 h-8"/>
-                </Link>
+                </Link> */}
                   <Link href="/login">
                     <Button
                       variant="ghost"
@@ -221,6 +240,14 @@ const Navbar = () => {
 
 
               <div className="flex items-center justify-between gap-4 pt-2">
+                 <Link href="/cart" className="relative">
+                  <ShoppingCart className="h-7 w-7" />
+                  {cartCount > 0 && (
+                    <span className="absolute -right-2 -top-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">
+                      {cartCount}
+                    </span>
+                  )}
+                </Link>
                 {status === "authenticated" && user ? (
                   <DropdownMenu
                     open={mobileDropdownOpen}

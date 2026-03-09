@@ -1,9 +1,13 @@
+"use client"
+
+// import { useCart } from '@/components/context/cart-context'
 import { Button } from '@/components/ui/button'
 import { ShoppingCart, Star } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
 
 const ProductDetailsContainer = ({id}:{id:string}) => {
+  //  const { addToCart } = useCart();
     console.log(id)
 
       const bullets = [
@@ -101,7 +105,22 @@ const ProductDetailsContainer = ({id}:{id:string}) => {
             </div>
 
             <div className="mt-8">
-              <Button className="h-11 rounded-lg bg-sky-500 px-6 text-sm font-semibold text-white hover:bg-sky-600">
+              <Button
+              
+              // onClick={() =>
+              //   addToCart({
+              //     id: product.id,
+              //     name: product.name,
+              //     description: product.description,
+              //     price: product.price,
+              //     image: product.image,
+              //     inStock: product.inStock,
+              //     detailsHref: product.detailsHref,
+              //     quantity: 1,
+              //   })
+              // }
+
+               className="h-11 rounded-lg bg-sky-500 px-6 text-sm font-semibold text-white hover:bg-sky-600">
                 <ShoppingCart className="mr-2 h-4 w-4" />
                 Add To Cart
               </Button>

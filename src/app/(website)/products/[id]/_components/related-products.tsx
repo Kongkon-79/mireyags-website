@@ -64,6 +64,7 @@ export default function RelatedProductsSection() {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {relatedProducts.map((product) => (
             <ProductCard key={product.id} product={product} compact />
+            //  <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </div>
