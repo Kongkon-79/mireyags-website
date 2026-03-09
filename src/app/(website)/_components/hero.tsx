@@ -40,19 +40,19 @@ export default function HeroSection() {
               <Button
                 asChild
                 size="lg"
-                className="h-12 rounded-[12px] px-8 text-base font-semibold shadow-lg"
+                className="w-[165px] md:w-auto h-12 rounded-[12px] px-8 text-base font-semibold shadow-lg"
               >
                 <Link href="/products">See Products <ArrowRight /></Link>
               </Button>
 
-              <Button
+              {/* <Button
                 asChild
                 size="lg"
                 variant="outline"
                 className="h-12 rounded-[12px] border-primary bg-transparent text-primary px-8 text-base font-semibold hover:bg-white/90"
               >
                 <Link href="#">Learn More</Link>
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>
