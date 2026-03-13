@@ -4,7 +4,7 @@ export interface CartProduct {
   description: string;
   price: number;
   image: string;
-  inStock: boolean;
+  inStock: string | number;
   quantity: number;
   detailsHref?: string;
 }

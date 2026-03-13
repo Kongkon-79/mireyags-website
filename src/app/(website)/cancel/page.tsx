@@ -47,7 +47,7 @@ export default function PaymentCancelPage() {
             <Link href="/">
             <Button
               // variant="outline"
-              className="w-full h-[48px] text-white text-sm font-semibold rounded-lg"
+              className="w-full h-[48px] text-white text-sm font-semibold rounded-[12px]"
             >
               Return Home
             </Button>

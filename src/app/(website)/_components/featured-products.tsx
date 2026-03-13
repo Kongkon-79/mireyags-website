@@ -13,70 +13,10 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import ProductCard, { ProductItem } from "./product-card";
+import ProductCard from "./product-card";
+import { useQuery } from "@tanstack/react-query";
+import { AllProductsApiResponse } from "@/components/types/products-data-type";
 
-const products: ProductItem[] = [
-  {
-    id: 1,
-    name: "BPC-157",
-    description:
-      "Body Protection Compound-157 for tissue repair research",
-    price: 89.99,
-    image: "/assets/images/products/1.jpg",
-    inStock: true,
-    detailsHref: "/products/1",
-  },
-  {
-    id: 2,
-    name: "BPC-157",
-    description:
-      "Body Protection Compound-157 for tissue repair research",
-    price: 89.99,
-    image: "/assets/images/products/2.jpg",
-    inStock: true,
-    detailsHref: "/products/2",
-  },
-  {
-    id: 3,
-    name: "BPC-157",
-    description:
-      "Body Protection Compound-157 for tissue repair research",
-    price: 89.99,
-    image: "/assets/images/products/3.jpg",
-    inStock: true,
-    detailsHref: "/products/3",
-  },
-  {
-    id: 4,
-    name: "BPC-157",
-    description:
-      "Body Protection Compound-157 for tissue repair research",
-    price: 89.99,
-    image: "/assets/images/products/4.jpg",
-    inStock: true,
-    detailsHref: "/products/4",
-  },
-  {
-    id: 5,
-    name: "BPC-157",
-    description:
-      "Body Protection Compound-157 for tissue repair research",
-    price: 89.99,
-    image: "/assets/images/products/5.jpg",
-    inStock: true,
-    detailsHref: "/products/5",
-  },
-  {
-    id: 6,
-    name: "BPC-157",
-    description:
-      "Body Protection Compound-157 for tissue repair research",
-    price: 89.99,
-    image: "/assets/images/products/1.jpg",
-    inStock: true,
-    detailsHref: "/products/6",
-  },
-];
 
 export default function FeaturedResearchPeptidesSection() {
   const plugin = React.useRef(
@@ -86,6 +26,20 @@ export default function FeaturedResearchPeptidesSection() {
       stopOnMouseEnter: true,
     })
   );
+
+
+  const {data, isLoading, error, isError} = useQuery<AllProductsApiResponse>({
+    queryKey: ["all-products"],
+    queryFn: async ()=>{
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product/get-all-products`)
+
+      return res.json();
+    }
+  })
+
+  const products = data?.data 
+
+  console.log(isError, error, isLoading)
 
   return (
     <section className="w-full bg-[#eaf4f7] py-14 md:py-20">
@@ -111,9 +65,9 @@ export default function FeaturedResearchPeptidesSection() {
             onMouseLeave={plugin.current.reset}
           >
             <CarouselContent className="-ml-4">
-              {products.map((product) => (
+              {products?.data?.map((product) => (
                 <CarouselItem
-                  key={product.id}
+                  key={product._id}
                   className="pl-4 sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
                 >
                   <ProductCard product={product} />

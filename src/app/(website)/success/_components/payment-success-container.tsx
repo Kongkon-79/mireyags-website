@@ -14,7 +14,7 @@ export default function PaymentSuccessContainer() {
       <div className="max-w-md w-full bg-white shadow-md rounded-xl p-8 text-center">
         {/* Icon */}
         <div className="flex justify-center">
-          <CheckCircle className="text-green-600" size={70} />
+          <CheckCircle className="text-primary" size={70} />
         </div>
 
         {/* Title */}
@@ -39,7 +39,7 @@ export default function PaymentSuccessContainer() {
               <span className="text-green-600 font-semibold">Completed</span>
             </p>
             <p>
-              <span className="font-medium">Payment Method :</span> Paypal
+              <span className="font-medium">Payment Method :</span> Stripe
             </p>
             {/* <p>
               <span className="font-medium">Transaction ID :</span> #TRX2025001
@@ -61,7 +61,7 @@ export default function PaymentSuccessContainer() {
             <Link href="/">
               <Button
                 // variant="outline"
-                className="w-full h-[48px] text-sm text-white font-semibold rounded-lg"
+                className="w-full h-[48px] text-sm text-white font-semibold rounded-[12px]"
               >
                 Continue Browsing
               </Button>

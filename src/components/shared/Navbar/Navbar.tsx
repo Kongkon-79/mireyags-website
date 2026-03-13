@@ -133,14 +133,14 @@ const Navbar = () => {
                     />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="p-2 border-none bg-white">
-                    <Link href="/profile">
+                    <Link href="/personal-information">
                       <DropdownMenuLabel className="cursor-pointer text-base md:text-lg text-[#131313] leading-[120%] font-medium hover:text-primary">
-                        Profile
+                        Personal Infomation
                       </DropdownMenuLabel>
                     </Link>
-                    <Link href="/password-change">
+                    <Link href="/orders">
                       <DropdownMenuLabel className="cursor-pointer text-base md:text-lg text-[#131313] leading-[120%] font-medium hover:text-primary">
-                        Password Change
+                        Orders
                       </DropdownMenuLabel>
                     </Link>
                     <DropdownMenuLabel
@@ -265,25 +265,25 @@ const Navbar = () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="p-2 bg-white border-white">
                       <Link
-                        href="/profile"
+                        href="/personal-information"
                         onClick={() => {
                           setIsOpen(false)
                           setMobileDropdownOpen(false)
                         }}
                       >
                         <DropdownMenuLabel className="cursor-pointer text-base md:text-lg text-[#131313] leading-[120%] font-medium hover:text-primary">
-                          Profile
+                          Personal Information
                         </DropdownMenuLabel>
                       </Link>
                       <Link
-                        href="/password-change"
+                        href="/orders"
                         onClick={() => {
                           setIsOpen(false)
                           setMobileDropdownOpen(false)
                         }}
                       >
                         <DropdownMenuLabel className="cursor-pointer text-base md:text-lg text-[#131313] leading-[120%] font-medium hover:text-primary">
-                          Password Change
+                          Orders
                         </DropdownMenuLabel>
                       </Link>
                       <DropdownMenuLabel
