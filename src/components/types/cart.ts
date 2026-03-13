@@ -1,6 +1,6 @@
 export interface CartProduct {
   id: number | string;
-  name: string;
+  name: string ;
   description: string;
   price: number;
   image: string;
