@@ -19,10 +19,10 @@ export default function ProductsContainer() {
   const [brand, setBrand] = useState<string | undefined>("");
 
   const { data, isLoading, error, isError } = useQuery<AllProductsApiResponse>({
-    queryKey: ["all-products", currentPage, debouncedSearch],
+    queryKey: ["all-products", currentPage, debouncedSearch, category, brand],
     queryFn: async () => {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/product/get-all-products?page=${currentPage}&limit=8&search=${debouncedSearch}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/product/get-all-products?page=${currentPage}&limit=8&search=${debouncedSearch}&category=${category}&brand=${brand}`,
       );
 
       return res.json();
@@ -45,6 +45,7 @@ export default function ProductsContainer() {
     });
 
   const categories =
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   categoryResponse?.data?.data?.map((item: any) => ({
     id: item._id,       // mongodb id
     name: item.name,
@@ -65,6 +66,7 @@ export default function ProductsContainer() {
 
 
     
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const brands = brandResponse?.data?.data?.map((item:any)=> ({
     id : item?._id,
     name : item?.name,

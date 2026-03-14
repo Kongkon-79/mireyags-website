@@ -14,7 +14,7 @@ export default function CheckoutContainer() {
 
   const [form, setForm] = useState<DeliveryInfo>(
     deliveryInfo ?? {
-      deliveryType: "home",
+      type: "home",
       firstName: "",
       lastName: "",
       phone: "",
@@ -65,8 +65,8 @@ export default function CheckoutContainer() {
             <label className="flex items-center gap-2">
               <input
                 type="radio"
-                checked={form.deliveryType === "home"}
-                onChange={() => handleChange("deliveryType", "home")}
+                checked={form.type === "home"}
+                onChange={() => handleChange("type", "home")}
               />
               Home
             </label>
@@ -74,8 +74,8 @@ export default function CheckoutContainer() {
             <label className="flex items-center gap-2">
               <input
                 type="radio"
-                checked={form.deliveryType === "office"}
-                onChange={() => handleChange("deliveryType", "office")}
+                checked={form.type === "office"}
+                onChange={() => handleChange("type", "office")}
               />
               Office
             </label>

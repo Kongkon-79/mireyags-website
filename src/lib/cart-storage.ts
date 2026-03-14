@@ -2,8 +2,8 @@
 
 import { CartProduct, DeliveryInfo } from "@/components/types/cart";
 
-const CART_KEY = "peptide_cart";
-const DELIVERY_KEY = "peptide_delivery_info";
+const CART_KEY = "product_cart";
+const DELIVERY_KEY = "product_delivery_info";
 
 export function getCartFromStorage(): CartProduct[] {
   if (typeof window === "undefined") return [];

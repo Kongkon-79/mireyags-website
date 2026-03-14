@@ -52,10 +52,10 @@ export default function CartContainer() {
 
                       <div className="mt-3 flex items-center gap-2">
                         <span className="text-lg font-bold text-primary">
-                          ${item.price.toFixed(2)}
+                          ${item?.offerPrice?.toFixed(2)}
                         </span>
                         <span className="text-xs text-slate-400 line-through">
-                          ${(item.price + 20).toFixed(0)}
+                          ${(item?.price + 20).toFixed(0)}
                         </span>
                       </div>
                     </div>
