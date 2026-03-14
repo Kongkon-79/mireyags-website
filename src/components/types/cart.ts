@@ -3,6 +3,7 @@ export interface CartProduct {
   name: string ;
   description: string;
   price: number;
+  offerPrice: number;
   size: string[];
   image: string;
   inStock: string | number;

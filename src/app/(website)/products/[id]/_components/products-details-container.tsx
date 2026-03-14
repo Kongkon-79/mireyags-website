@@ -119,7 +119,7 @@ const ProductDetailsContainer = ({ id }: { id: string }) => {
 
             {/* Price */}
             <div className="mt-5 text-2xl md:text-3xl lg:text-4xl font-semibold text-[#18181B] leading-normal">
-              ${productData?.price || "N/A"} <del className="text-xl md:text-2xl lg:text-3xl text-[#424242] font-normal">${productData?.offerPrice || "N/A"}</del>
+              ${productData?.offerPrice || "N/A"} <del className="text-xl md:text-2xl lg:text-3xl text-[#424242] font-normal">${productData?.price || "N/A"}</del>
             </div>
 
             {/* Description */}
@@ -140,6 +140,7 @@ const ProductDetailsContainer = ({ id }: { id: string }) => {
                     name: productData?.name ?? "",
                     description: productData?.description ?? "",
                     price: productData?.price ?? 0,
+                    offerPrice: productData?.offerPrice ?? 0,
                     image: productData?.image ?? "",
                     inStock: productData?.stock ?? 0,
                     size: productData?.size ?? [] ,

@@ -100,7 +100,7 @@ export default function ProductCard({
                 : "mt-3 text-[22px] leading-none",
             )}
           >
-            ${product.price.toFixed(2)}
+            ${product?.offerPrice?.toFixed(2)}
           </div>
 
           <div
@@ -126,6 +126,7 @@ export default function ProductCard({
                   name: product.name,
                   description: product.description,
                   price: product.price,
+                  offerPrice: product.offerPrice,
                   image: product.image,
                   inStock: product.stock,
                   size: product?.size,
