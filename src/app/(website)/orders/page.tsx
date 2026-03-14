@@ -3,7 +3,7 @@ import OrdersContainer from './_components/order-container'
 
 const OrdersPage = () => {
   return (
-    <div>
+    <div className=''>
         <OrdersContainer/>
     </div>
   )
