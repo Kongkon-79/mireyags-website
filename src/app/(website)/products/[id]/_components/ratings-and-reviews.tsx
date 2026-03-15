@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Image from "next/image";
 import { Star } from "lucide-react";
@@ -6,10 +6,9 @@ import { useQuery } from "@tanstack/react-query";
 import { ReviewsApiResponse } from "./ratings-and-reviews-data-type";
 import moment from "moment";
 
-
 function ReviewStars({ rating }: { rating: number }) {
   return (
-    <div className="flex items-center gap-1 text-slate-900">
+    <div className="flex items-center gap-1 text-[#000000]">
       {Array.from({ length: 5 }).map((_, index) => (
         <Star
           key={index}
@@ -21,32 +20,24 @@ function ReviewStars({ rating }: { rating: number }) {
   );
 }
 
-export default function RatingsReviewsSection() {
+export default function RatingsReviewsSection({ id }: { id: string }) {
+  const { data, isLoading, error, isError } = useQuery<ReviewsApiResponse>({
+    queryKey: ["all-reviews", id],
+    queryFn: async () => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/review/${id}`,
+      );
 
-   const { data, isLoading, error, isError } = useQuery<ReviewsApiResponse>({
-      queryKey: ["all-reviews"],
-      queryFn: async () => {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/order`
-          // {
-          //   method: "GET",
-          //   headers: {
-          //     Authorization: `Bearer ${token}`,
-          //   },
-          // },
-          
-        );
-  
-        return res.json();
-      },
-    });
+      return res.json();
+    },
+  });
 
-    const reviews = data?.data?.data;
+  const reviews = data?.data?.data;
   console.log(reviews);
 
   console.log(isError, error, isLoading);
   return (
-    <section className="w-full bg-[#edf4f6] py-14 md:py-20">
+    <section className="w-full py-14 md:py-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl font-bold text-slate-900 md:text-4xl">
@@ -57,15 +48,15 @@ export default function RatingsReviewsSection() {
           </p>
         </div>
 
-        <div className="mx-auto mt-10 max-w-3xl">
+        <div className="mx-auto mt-10 max-w-3xl border-b border-[#1E2A3833]">
           {reviews?.map((review) => (
             <div
               key={review?._id}
-              className="flex gap-4 border-b border-slate-200 py-6 last:border-b-0"
+              className="flex gap-2 border-b border-slate-200 py-6 last:border-b-0"
             >
               <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full">
                 <Image
-                  src={"/assets/images/no-user.jpg"}
+                  src={review?.userId?.profileImage ||  "/assets/images/no-user.jpg"}
                   alt={review?.userId?.name}
                   fill
                   className="object-cover"
@@ -75,15 +66,18 @@ export default function RatingsReviewsSection() {
               <div className="flex-1">
                 <ReviewStars rating={review.rating} />
 
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
+                <p className="mt-3 max-w-2xl text-sm leading-normal text-[#18181B]">
                   {review.comment}
                 </p>
 
-                <h3 className="mt-4 text-sm font-semibold text-slate-900">
+                <h3 className="mt-4 text-sm leading-bold font-bold text-[#18181B]">
                   {review?.userId?.name}
                 </h3>
 
-                <p className="mt-1 text-xs text-slate-400"> {moment(review?.createdAt).format("DD MMM, YYYY")}</p>
+                <p className="mt-1 text-xs text-[#71717A] leading-normal font-normal">
+                  {" "}
+                  {moment(review?.createdAt).format("DD MMM, YYYY")}
+                </p>
               </div>
             </div>
           ))}

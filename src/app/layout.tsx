@@ -4,6 +4,7 @@ import { Manrope } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import AuthProvider from "@/components/providers/AuthProvider";
 import AppProvider from "@/components/providers/AppProvider";
+import NextTopLoader from 'nextjs-toploader'
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -24,6 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" >
       <body className={`${manrope.variable} font-manrope antialiased`}>
+        <NextTopLoader color="#00B6E0" height={3} showSpinner={false}  />
         <AuthProvider>
           <AppProvider>
 

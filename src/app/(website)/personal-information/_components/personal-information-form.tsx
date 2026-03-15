@@ -1,16 +1,10 @@
 "use client";
 
-import * as React from "react";
-import { useSession } from "next-auth/react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -19,392 +13,279 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useSession } from "next-auth/react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { toast } from "sonner";
+import PersonalInfoSkeleton from "./PersonalInfoSkeleton";
+import { UserProfileApiResponse } from "./personal-info-data-type";
 
-const profileSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().optional(),
-  phoneNumber: z.string().optional(),
-  email: z.string().email("Enter a valid email"),
-  country: z.string().optional(),
-  cityState: z.string().optional(),
-  roadArea: z.string().optional(),
+const formSchema = z.object({
+  name: z.string().min(2, {
+    message: "First Name must be at least 2 characters.",
+  }),
+  email: z.string().min(2, {
+    message: "Email must be at least 2 characters.",
+  }),
+  phone: z.string().min(2, {
+    message: "Phone Number must be at least 2 characters.",
+  }),
+  country: z.string().min(2, {
+    message: "Country must be at least 2 characters.",
+  }),
+  cityState: z.string().min(2, {
+    message: "City be at least 2 characters.",
+  }),
+  roadArea: z.string().min(2, {
+    message: "Address must be at least 2 characters.",
+  }),
 });
 
-type ProfileFormValues = z.infer<typeof profileSchema>;
-
-type UserProfileResponse = {
-  status: boolean;
-  message: string;
-  data: {
-    _id: string;
-    name: string;
-    email: string;
-    dob: string | null;
-    gender: string;
-    role: string;
-    stripeAccountId: string | null;
-    bio: string;
-    profileImage: string;
-    multiProfileImage: string[];
-    pdfFile: string;
-    otp: string | null;
-    otpExpires: string | null;
-    otpVerified: boolean;
-    resetExpires: string | null;
-    isVerified: boolean;
-    refreshToken: string;
-    hasActiveSubscription: boolean;
-    subscriptionExpireDate: string | null;
-    blockedUsers: string[];
-    language: string;
-    phoneNumber?: string;
-    address: {
-      country: string;
-      cityState: string;
-      roadArea: string;
-      postalCode: string;
-      taxId: string;
-    };
-  };
-};
-
-type UpdateProfileResponse = {
-  status: boolean;
-  message: string;
-  data: UserProfileResponse["data"];
-};
-
-function splitName(fullName: string) {
-  const trimmed = fullName?.trim() || "";
-  if (!trimmed) {
-    return { firstName: "", lastName: "" };
-  }
-
-  const parts = trimmed.split(" ");
-  const firstName = parts[0] || "";
-  const lastName = parts.slice(1).join(" ");
-
-  return { firstName, lastName };
-}
-
-export default function PersonalInformationForm() {
+const PersonalInformationForm = () => {
   const queryClient = useQueryClient();
+
   const { data: session } = useSession();
   const token = (session?.user as { accessToken?: string })?.accessToken;
 
-  const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
+  const { data, isLoading } = useQuery<UserProfileApiResponse>({
+    queryKey: ["user-profile"],
+    queryFn: async () => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/me`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      return res.json();
+    },
+    enabled: !!token,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  console.log(data);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      phoneNumber: "",
+      name: "",
       email: "",
+      phone: "",
       country: "",
       cityState: "",
       roadArea: "",
     },
   });
 
-  const { isLoading, isError, refetch } = useQuery<UserProfileResponse>({
-    queryKey: ["user-profile"],
-    queryFn: async () => {
-      if (!token) {
-        throw new Error("Unauthorized. Please login again.");
-      }
+  useEffect(() => {
+    if (data?.data) {
+      const user = data.data;
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/profile`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          cache: "no-store",
-        }
-      );
+      form.reset({
+        name: user?.name ?? "",
+        email: user.email ?? "",
+        phone: user.phone ?? "",
+        country: user?.address?.country ?? "",
+        cityState: user?.address?.cityState ?? "",
+        roadArea: user?.address?.roadArea ?? "",
+      });
+    }
+  }, [data, form]);
 
-      const data: UserProfileResponse = await res.json();
-
-      if (!res.ok || !data.status) {
-        throw new Error(data.message || "Failed to fetch profile");
-      }
-
-      return data;
-    },
-    enabled: !!token,
-  });
-
-  const { mutate, isPending } = useMutation<
-    UpdateProfileResponse,
-    Error,
-    ProfileFormValues
-  >({
+  const { mutate, isPending } = useMutation({
     mutationKey: ["update-profile"],
-    mutationFn: async (values) => {
-      if (!token) {
-        throw new Error("Unauthorized. Please login again.");
-      }
-
-      const fullName = `${values.firstName} ${values.lastName || ""}`.trim();
-
-      const payload = {
-        name: fullName,
-        email: values.email,
-        phoneNumber: values.phoneNumber || "",
-        address: {
-          country: values.country || "",
-          cityState: values.cityState || "",
-          roadArea: values.roadArea || "",
-        },
-      };
-
+    mutationFn: async (values: z.infer<typeof formSchema>) => {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/profile`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/me`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(payload),
-        }
+          body: JSON.stringify(values),
+        },
       );
-
-      const data: UpdateProfileResponse = await res.json();
-
-      if (!res.ok || !data.status) {
-        throw new Error(data.message || "Failed to update profile");
-      }
-
-      return data;
+      return res.json();
     },
     onSuccess: async (data) => {
-      toast.success(data.message || "Profile updated successfully");
+      if (!data?.status) {
+        toast.error(data?.message || "Something went wrong");
+        return;
+      }
+      toast.success(data?.message || "Profile updated successfully");
       await queryClient.invalidateQueries({ queryKey: ["user-profile"] });
     },
-    onError: (error) => {
-      toast.error(error.message || "Update failed");
-    },
+    onError: () => toast.error("Update failed"),
   });
 
-  const profileData = queryClient.getQueryData<UserProfileResponse>(["user-profile"]);
-
-  React.useEffect(() => {
-    const currentData = profileData?.data;
-    if (!currentData) return;
-
-    const { firstName, lastName } = splitName(currentData.name);
-
-    form.reset({
-      firstName,
-      lastName,
-      phoneNumber: currentData.phoneNumber || "",
-      email: currentData.email || "",
-      country: currentData.address?.country || "",
-      cityState: currentData.address?.cityState || "",
-      roadArea: currentData.address?.roadArea || "",
-    });
-  }, [profileData, form]);
-
-  const onSubmit = (values: ProfileFormValues) => {
-    mutate(values);
-  };
-
+  // loading
   if (isLoading) {
     return (
-      <div className="rounded-[8px] border border-[#E4E4E4] bg-white p-6">
-        <div className="flex min-h-[300px] items-center justify-center">
-          <div className="flex items-center gap-3 text-slate-600">
-            <Loader2 className="h-5 w-5 animate-spin" />
-            <span>Loading profile...</span>
-          </div>
-        </div>
+      <div className="">
+        <PersonalInfoSkeleton />
       </div>
     );
   }
 
-  if (isError) {
-    return (
-      <div className="rounded-[8px] border border-[#E4E4E4] bg-white p-6">
-        <div className="flex min-h-[300px] flex-col items-center justify-center gap-4">
-          <p className="text-sm text-red-500">Failed to load profile data.</p>
-          <Button onClick={() => refetch()} variant="outline">
-            Retry
-          </Button>
-        </div>
-      </div>
-    );
+  // 2. Define a submit handler.
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
+
+    mutate(values);
   }
 
   return (
-    <div className="rounded-[8px] border border-[#E4E4E4] bg-white p-6 shadow-sm">
-      <h3 className="pb-6 text-lg font-semibold leading-normal text-[#252471]">
-        Personal Information
-      </h3>
+    <div className="h-full py-6 px-8 bg-white rounded-[8px] shadow-[0_4px_8px_rgba(0,0,0,0.12)]">
+      <div>
+        <h4 className="text-xl md:text-2xl text-[#343A40] leading-[120%] font-semibold">
+          Personal Information
+        </h4>
+      </div>
+      {/* form  */}
+      <div className="pt-8">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base text-[#1E1E1E] leading-[120%] font-medium">
+                      Full Name
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className="h-[48px] w-full rounded-[4px] border-[#C0C3C1] p-3 placeholder:text-[#8E959F] text-[#1E1E1E] text-base ring-0 outline-none leading-[120%] font-medium"
+                        placeholder="Maria Jasmin"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base text-[#1E1E1E] leading-[120%] font-medium">
+                      Email Address
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled
+                        className="h-[48px] w-full rounded-[4px] border-[#C0C3C1] p-3 placeholder:text-[#8E959F] text-[#1E1E1E] text-base ring-0 outline-none leading-[120%] font-medium"
+                        placeholder="admin@gmail.com"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base text-[#1E1E1E] leading-[120%] font-medium">
+                      Phone Number
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className="h-[48px] w-full rounded-[4px] border-[#C0C3C1] p-3 placeholder:text-[#8E959F] text-[#1E1E1E] text-base ring-0 outline-none leading-[120%] font-medium"
+                        placeholder="+1 (555) 123-4567"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="country"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base text-[#1E1E1E] leading-[120%] font-medium">
+                      Country
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className="h-[48px] w-full rounded-[4px] border-[#C0C3C1] p-3 placeholder:text-[#8E959F] text-[#1E1E1E] text-base ring-0 outline-none leading-[120%] font-medium"
+                        placeholder="Enter your country"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="cityState"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base text-[#1E1E1E] leading-[120%] font-medium">
+                      City
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className="h-[48px] w-full rounded-[4px] border-[#C0C3C1] p-3 placeholder:text-[#8E959F] text-[#1E1E1E] text-base ring-0 outline-none leading-[120%] font-medium"
+                        placeholder="Enter your city"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="roadArea"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base text-[#1E1E1E] leading-[120%] font-medium">
+                      Address
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className="h-[48px] w-full rounded-[4px] border-[#C0C3C1] p-3 placeholder:text-[#8E959F] text-[#1E1E1E] text-base ring-0 outline-none leading-[120%] font-medium"
+                        placeholder="Enter your address"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500" />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="w-full flex items-center justify-center pt-5">
+              {/* <Button
+                type="button"
+                variant="outline"
+                onClick={() => form.reset()}
+                className="h-[47px] text-sm text-[#E5102E] leading-[120%] font-medium py-4 px-6 rounded-[6px] border border-[#E5102E]"
+              >
+                Discard Changes
+              </Button> */}
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-[#4B5563]">
-                    First Name
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="Enter first name"
-                      className="h-[48px] rounded-[8px] border border-[#CECECE] text-base"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-[#4B5563]">
-                    Last Name
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="Enter last name"
-                      className="h-[48px] rounded-[8px] border border-[#CECECE] text-base"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="phoneNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-[#4B5563]">
-                    Phone Number
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="+880-123456789"
-                      className="h-[48px] rounded-[8px] border border-[#CECECE] text-base"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-[#4B5563]">
-                    Email
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type="email"
-                      placeholder="Enter email"
-                      className="h-[48px] rounded-[8px] border border-[#CECECE] text-base"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="country"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-[#4B5563]">
-                    Country
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="Enter country"
-                      className="h-[48px] rounded-[8px] border border-[#CECECE] text-base"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="cityState"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-[#4B5563]">
-                    City
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="Enter city"
-                      className="h-[48px] rounded-[8px] border border-[#CECECE] text-base"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <FormField
-            control={form.control}
-            name="roadArea"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm font-medium text-[#4B5563]">
-                  Address
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    placeholder="Enter address"
-                    className="h-[48px] rounded-[8px] border border-[#CECECE] text-base"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="flex justify-end pt-2">
-            <Button
-              type="submit"
-              disabled={isPending}
-              className="h-[44px] min-w-[168px] rounded-[8px] bg-[#12B5D3] px-8 text-base font-medium text-white hover:bg-[#0ea5c0]"
-            >
-              {isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                "Save"
-              )}
-            </Button>
-          </div>
-        </form>
-      </Form>
+              <Button
+                disabled={isPending}
+                className="h-[47px] text-base text-[#F8F9FA] leading-[120%] font-medium py-4 px-20 rounded-[6px]"
+                type="submit"
+              >
+                {isPending ? "Updating..." : "Save"}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
     </div>
   );
-}
+};
+
+export default PersonalInformationForm;

@@ -67,7 +67,7 @@ const Footer = () => {
                   Sign UP
                 </li>
               </Link>
-              <Link href="#">
+              <Link href="/cart">
                 <li className="text-sm md:text-base font-normal text-white leading-[120%] hover:underline hover:text-primary">
                   Shopping Cart
                 </li>

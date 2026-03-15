@@ -33,4 +33,6 @@ export interface ReviewUser {
   _id: string;
   name: string;
   email: string;
+  profileImage: string;
+  
 }

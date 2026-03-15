@@ -8,7 +8,7 @@ const ProductDetailsPage = ({params}:{params:{id:string}}) => {
     <div>
         <ProductDetailsContainer id={params?.id}/>
         <RelatedProductsSection/>
-        <RatingsReviewsSection/>
+        <RatingsReviewsSection id={params?.id}/>
     </div>
   )
 }
