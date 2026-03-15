@@ -93,8 +93,18 @@ const PersonalInformationForm = () => {
   }, [data, form]);
 
   const { mutate, isPending } = useMutation({
+    
     mutationKey: ["update-profile"],
     mutationFn: async (values: z.infer<typeof formSchema>) => {
+        const payload = {
+    name: values.name,
+    phone: values.phone,
+    address: {
+      country: values.country,
+      cityState: values.cityState,
+      roadArea: values.roadArea,
+    },
+  };
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/me`,
         {
@@ -103,7 +113,7 @@ const PersonalInformationForm = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(values),
+           body: JSON.stringify(payload),
         },
       );
       return res.json();

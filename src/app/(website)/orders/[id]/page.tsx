@@ -1,12 +1,13 @@
 
 
 import React from 'react'
-import ReviewPage from './_components/review-page'
+import OrderDetails from './_components/order-details-container'
 
 const OrderDetailsPage = ({params}:{params:{id:string}}) => {
   return (
     <div>
-        <ReviewPage orderId={params?.id} />
+        <OrderDetails orderId={params?.id} />
+      
     </div>
   )
 }
