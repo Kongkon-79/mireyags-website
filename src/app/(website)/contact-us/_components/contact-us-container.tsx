@@ -19,7 +19,7 @@ const ContactInformation = () => {
                             </div>
                             <div>
                                 <h4 className='text-base lg:text-lg font-normal leading-[120%] text-[#131313]'>Email Address</h4>
-                                <p className='text-sm lg:text-base leading-[150%] text-[#616161] font-normal'>Info@analyticsoccer.com</p>
+                                <p className='text-sm lg:text-base leading-[150%] text-[#616161] font-normal'>axlomwellnessco@gmail.com</p>
                             </div>
                         </div>
                         <div className='flex items-center  gap-2'>

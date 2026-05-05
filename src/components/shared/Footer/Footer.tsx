@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
+// import Image from "next/image";
 import { Mail, MapPin, Phone } from "lucide-react";
 
 const Footer = () => {
@@ -11,17 +11,17 @@ const Footer = () => {
           <div className="md:col-span-3 ">
             {/* Logo */}
             <Link href="/" className="">
-              <Image
+              {/* <Image
                 src="/assets/images/footer_logo.png"
                 alt="logo"
                 width={1000}
                 height={1000}
                 className="w-auto h-[36px] object-contain"
-              />
+              /> */}
+              <h2 className="text-white text-2xl md:text-3xl lg:text-3xl font-extrabold leading-normal">Axiom <span className="font-normal">Wellness</span></h2>
             </Link>
             <p className="max-w-[210px] text-sm md:text-base text-white leading-normal font-normal pt-4">
-              Premium quality research peptides for scientific and educational
-              purposes only.
+              Precision wellness elevated living
             </p>
           </div>
 
@@ -114,10 +114,10 @@ const Footer = () => {
             <div className="flex items-center gap-4">
               <Mail className="w-6 h-6 text-white" />
               <Link
-                href="mail:info@researchpeptides.com"
+                href="mailto:axlomwellnessco@gmail.com"
                 className="text-sm md:text-base leading-normal font-normal text-white"
               >
-                info@researchpeptides.com
+                axlomwellnessco@gmail.com
               </Link>
             </div>
           </div>
@@ -125,7 +125,7 @@ const Footer = () => {
       </div>
       {/* footer bottom  */}
       <p className="container text-sm md:text-base font-medium text-center text-[#131313] leading-[120%] py-6 ">
-        Copyright © {new Date().getFullYear()}. Hierarchy of Visionaries. All
+        Copyright © {new Date().getFullYear()}. Axiom Wellness. All
         rights reserved.
       </p>
     </div>

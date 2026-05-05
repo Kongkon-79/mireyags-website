@@ -74,13 +74,14 @@ const Navbar = () => {
           <div className="flex items-center justify-between gap-5">
            {/* Logo */}
             <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-              <Image
+              {/* <Image
                 src="/assets/images/logo.png"
                 alt="logo"
                 width={1000}
                 height={1000}
                 className="w-auto h-[40px] object-contain"
-              />
+              /> */}
+                <h2 className="text-[#131313] text-2xl md:text-3xl lg:text-3xl font-extrabold leading-normal">Axiom <span className="font-normal">Wellness</span></h2>
             </Link>
 
             {/* Desktop Menu */}
